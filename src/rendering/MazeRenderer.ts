@@ -1,12 +1,16 @@
-import type { Maze } from "src/Maze";
+import { Point } from "../utils/Point";
+import type { Maze } from "../Maze";
+import { Player } from "../Player";
 
 class MazeRenderer {
   public maze: Maze;
+  public player: Player;
 
   private readonly canvas: HTMLCanvasElement;
   private readonly ctx: CanvasRenderingContext2D;
-  constructor(canvas: HTMLCanvasElement, maze: Maze) {
+  constructor(canvas: HTMLCanvasElement, maze: Maze, player: Player) {
     this.maze = maze;
+    this.player = player;
     this.canvas = canvas;
 
     const ctx = canvas.getContext("2d");
@@ -31,24 +35,58 @@ class MazeRenderer {
     this.ctx.fillStyle = "#333";
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-    const tileSize = Math.floor(
+    this.renderMaze();
+    this.renderPlayer();
+  }
+
+  private renderMaze(): void {
+    const tileSize = this.getTileSize();
+    const corner = this.getMazeCorner();
+
+    for (const tile of this.maze) {
+      const x = tileSize * tile.x + corner.x;
+      const y = tileSize * tile.y + corner.y;
+
+      this.ctx.fillStyle = tile.isWall ? "#000" : "#fff";
+      this.ctx.fillRect(x, y, tileSize, tileSize);
+    }
+  }
+
+  private renderPlayer(): void {
+    const tileSize = this.getTileSize();
+    const playerSize = Player.SIZE * tileSize;
+    const corner = this.getMazeCorner();
+
+    const playerX =
+      corner.x +
+      this.player.position.x * tileSize +
+      0.5 * (tileSize - playerSize);
+    const playerY =
+      corner.y +
+      (this.maze.height - this.player.position.y - 1) * tileSize +
+      0.5 * (tileSize - playerSize);
+
+    this.ctx.fillStyle = "#f00";
+    this.ctx.fillRect(playerX, playerY, playerSize, playerSize);
+  }
+
+  private getTileSize(): number {
+    return Math.floor(
       0.95 *
         Math.min(
           this.canvas.width / this.maze.width,
           this.canvas.height / this.maze.height
         )
     );
+  }
 
-    const cornerX = (this.canvas.width - tileSize * this.maze.width) / 2;
-    const cornerY = (this.canvas.height - tileSize * this.maze.height) / 2;
+  private getMazeCorner(): Point {
+    const tileSize = this.getTileSize();
 
-    for (const tile of this.maze) {
-      const x = tileSize * tile.x + cornerX;
-      const y = tileSize * tile.y + cornerY;
-
-      this.ctx.fillStyle = tile.isWall ? "#000" : "#fff";
-      this.ctx.fillRect(x, y, tileSize, tileSize);
-    }
+    return new Point(
+      (this.canvas.width - tileSize * this.maze.width) / 2,
+      (this.canvas.height - tileSize * this.maze.height) / 2
+    );
   }
 }
 
