@@ -6,7 +6,6 @@
   "scripts": {
     "deploy": "git subtree push --prefix build origin gh-pages",
     "dev": "vite",
-    "prebuild": "pnpm lint",
     "build": "tsc && vite build",
     "postbuild": "pnpm minify",
     "preview": "vite preview",
