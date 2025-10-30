@@ -67,7 +67,23 @@ class MazeRenderer {
       0.5 * (tileSize - playerSize);
 
     this.ctx.fillStyle = "#f00";
-    this.ctx.fillRect(playerX, playerY, playerSize, playerSize);
+
+    const scaleX = 0.7;
+    const triangleX = playerX + 0.5 * playerSize;
+
+    this.ctx.save();
+    this.ctx.translate(triangleX, playerY + playerSize / 2);
+    this.ctx.rotate((Math.PI * this.player.rotation) / 180);
+
+    this.ctx.beginPath();
+    this.ctx.moveTo((-scaleX * playerSize) / 2, playerSize / 2);
+    this.ctx.lineTo((scaleX * playerSize) / 2, playerSize / 2);
+    this.ctx.lineTo(0, -playerSize / 2);
+    this.ctx.lineTo((-scaleX * playerSize) / 2, playerSize / 2);
+    this.ctx.closePath();
+    this.ctx.fill();
+
+    this.ctx.restore();
   }
 
   private getTileSize(): number {
