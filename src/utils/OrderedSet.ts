@@ -22,6 +22,16 @@ class OrderedSet<T> {
     this.array.push(element);
   }
 
+  public remove(element: T): void {
+    const index = this.array.indexOf(element);
+
+    if (index === -1) {
+      return;
+    }
+
+    this.array.splice(index, 1);
+  }
+
   public get(index: number): T {
     return this.array[index];
   }
