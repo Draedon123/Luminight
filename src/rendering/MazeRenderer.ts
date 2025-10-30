@@ -1,6 +1,7 @@
 import { Point } from "../utils/Point";
 import type { Maze } from "../Maze";
 import { Player } from "../Player";
+import { radians } from "../utils/angles";
 
 class MazeRenderer {
   public maze: Maze;
@@ -73,7 +74,7 @@ class MazeRenderer {
 
     this.ctx.save();
     this.ctx.translate(triangleX, playerY + playerSize / 2);
-    this.ctx.rotate((Math.PI * this.player.rotation) / 180);
+    this.ctx.rotate(radians(this.player.rotation));
 
     this.ctx.beginPath();
     this.ctx.moveTo((-scaleX * playerSize) / 2, playerSize / 2);
