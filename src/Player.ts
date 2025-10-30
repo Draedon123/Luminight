@@ -8,10 +8,13 @@ class Player {
   public position: Point;
   /** degrees */
   public rotation: number;
+  /** degrees */
+  public fov: number;
   constructor(maze: Maze) {
     this.maze = maze;
     this.position = new Point(1, 1);
     this.rotation = 0;
+    this.fov = 45;
   }
 }
 
