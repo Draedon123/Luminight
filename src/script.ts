@@ -19,39 +19,26 @@ const KEYBINDS = {
   LEFT: "KeyA",
   BACKWARDS: "KeyS",
   RIGHT: "KeyD",
-  // ROTATE_LEFT: "ArrowLeft",
-  // ROTATE_RIGHT: "ArrowRight",
 };
 
 const keyboardManager = new KeyboardManager(Object.values(KEYBINDS));
 keyboardManager.addEventListeners();
 
 const movementSpeed = 0.0025;
-// const rotationSpeed = 0.25;
+const flickerRadius = 0.025;
+const flickerSpeed = 1 / 160;
+const playerAuraRadius = 1.5;
+
+renderer.auraIntensity = 0.8;
 
 loop.addCallback((frame) => {
-  // const sine = Math.sin(radians(player.rotation));
-  // const cosine = Math.cos(radians(player.rotation));
-
-  // if (keyboardManager.isKeyDown(KEYBINDS.FORWARD)) {
-  //   player.position.x += sine * movementSpeed * frame.deltaTime;
-  //   player.position.y += cosine * movementSpeed * frame.deltaTime;
-  // }
-
-  // if (keyboardManager.isKeyDown(KEYBINDS.BACKWARDS)) {
-  //   player.position.x -= sine * movementSpeed * frame.deltaTime;
-  //   player.position.y -= cosine * movementSpeed * frame.deltaTime;
-  // }
-
-  // if (keyboardManager.isKeyDown(KEYBINDS.LEFT)) {
-  //   player.position.x -= cosine * movementSpeed * frame.deltaTime;
-  //   player.position.y += sine * movementSpeed * frame.deltaTime;
-  // }
-
-  // if (keyboardManager.isKeyDown(KEYBINDS.RIGHT)) {
-  //   player.position.x += cosine * movementSpeed * frame.deltaTime;
-  //   player.position.y -= sine * movementSpeed * frame.deltaTime;
-  // }
+  renderer.playerAuraRadius =
+    playerAuraRadius +
+    flickerRadius * Math.cos(frame.frame * frame.deltaTime * flickerSpeed);
+  renderer.auraIntensity = Math.min(
+    Math.max(0.5, renderer.auraIntensity + 0.1 * (Math.random() - 0.5)),
+    1
+  );
 
   if (keyboardManager.isKeyDown(KEYBINDS.FORWARD)) {
     player.moveY(movementSpeed * frame.deltaTime);
@@ -68,14 +55,6 @@ loop.addCallback((frame) => {
   if (keyboardManager.isKeyDown(KEYBINDS.RIGHT)) {
     player.moveX(movementSpeed * frame.deltaTime);
   }
-
-  // if (keyboardManager.isKeyDown(KEYBINDS.ROTATE_RIGHT)) {
-  //   player.rotation += rotationSpeed * frame.deltaTime;
-  // }
-
-  // if (keyboardManager.isKeyDown(KEYBINDS.ROTATE_LEFT)) {
-  //   player.rotation -= rotationSpeed * frame.deltaTime;
-  // }
 
   renderer.render();
 });

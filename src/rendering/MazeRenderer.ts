@@ -9,6 +9,7 @@ class MazeRenderer {
   public maze: Maze;
   public player: Player;
   public playerAuraRadius: number;
+  public auraIntensity: number;
 
   private readonly canvas: HTMLCanvasElement;
   private readonly ctx: CanvasRenderingContext2D;
@@ -18,6 +19,7 @@ class MazeRenderer {
     this.maze = maze;
     this.player = player;
     this.playerAuraRadius = 1.5;
+    this.auraIntensity = 1;
     this.canvas = canvas;
     this.ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
     this.mask = document.createElement("canvas");
@@ -78,29 +80,12 @@ class MazeRenderer {
       playerSize,
       playerSize
     );
-
-    // const scaleX = 0.7;
-    // const triangleX = playerRenderPosition.x + 0.5 * playerSize;
-
-    // this.ctx.save();
-    // this.ctx.translate(triangleX, playerRenderPosition.y + playerSize / 2);
-    // this.ctx.rotate(radians(this.player.rotation));
-
-    // this.ctx.beginPath();
-    // this.ctx.moveTo((-scaleX * playerSize) / 2, playerSize / 2);
-    // this.ctx.lineTo((scaleX * playerSize) / 2, playerSize / 2);
-    // this.ctx.lineTo(0, -playerSize / 2);
-    // this.ctx.lineTo((-scaleX * playerSize) / 2, playerSize / 2);
-    // this.ctx.closePath();
-    // this.ctx.fill();
-
-    // this.ctx.restore();
   }
 
   private renderMask(): void {
     const mazeCorner = this.getMazeCorner();
     const tileSize = this.getTileSize();
-    const auraRadius = this.playerAuraRadius * tileSize;
+    const auraRadius = Math.floor(this.playerAuraRadius * tileSize);
     const playerRenderPosition = this.getPlayerRenderPosition();
     const playerSize = tileSize * Player.SIZE;
 
@@ -123,8 +108,6 @@ class MazeRenderer {
       auraRadius * 2
     );
 
-    this.maskCTX.restore();
-
     const spotlight = this.maskCTX.createRadialGradient(
       auraX,
       auraY,
@@ -140,6 +123,11 @@ class MazeRenderer {
 
     this.maskCTX.fillStyle = spotlight;
     this.maskCTX.fill();
+
+    this.maskCTX.fillStyle = `rgba(32, 32, 32, ${1 - this.auraIntensity})`;
+    this.maskCTX.fill();
+
+    this.maskCTX.restore();
 
     this.ctx.drawImage(this.mask, mazeCorner.x, mazeCorner.y);
   }
