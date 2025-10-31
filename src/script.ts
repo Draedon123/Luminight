@@ -54,19 +54,19 @@ loop.addCallback((frame) => {
   // }
 
   if (keyboardManager.isKeyDown(KEYBINDS.FORWARD)) {
-    player.position.y += movementSpeed * frame.deltaTime;
+    player.moveY(movementSpeed * frame.deltaTime);
   }
 
   if (keyboardManager.isKeyDown(KEYBINDS.BACKWARDS)) {
-    player.position.y -= movementSpeed * frame.deltaTime;
+    player.moveY(-movementSpeed * frame.deltaTime);
   }
 
   if (keyboardManager.isKeyDown(KEYBINDS.LEFT)) {
-    player.position.x -= movementSpeed * frame.deltaTime;
+    player.moveX(-movementSpeed * frame.deltaTime);
   }
 
   if (keyboardManager.isKeyDown(KEYBINDS.RIGHT)) {
-    player.position.x += movementSpeed * frame.deltaTime;
+    player.moveX(movementSpeed * frame.deltaTime);
   }
 
   // if (keyboardManager.isKeyDown(KEYBINDS.ROTATE_RIGHT)) {

@@ -58,7 +58,7 @@ class MazeRenderer {
 
     for (const tile of this.maze) {
       const x = tileSize * tile.x + corner.x;
-      const y = tileSize * tile.y + corner.y;
+      const y = tileSize * (this.maze.height - tile.y - 1) + corner.y;
 
       this.ctx.fillStyle = tile.isWall ? "#000" : "#fff";
       this.ctx.fillRect(x, y, tileSize, tileSize);
