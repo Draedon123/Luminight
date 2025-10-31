@@ -1,7 +1,7 @@
 import { Point } from "../utils/Point";
 import type { Maze } from "../Maze";
 import { Player } from "../Player";
-import { radians } from "../utils/angles";
+// import { radians } from "../utils/angles";
 
 const TWO_PI = Math.PI * 2;
 
@@ -72,22 +72,29 @@ class MazeRenderer {
 
     this.ctx.fillStyle = "#f00";
 
-    const scaleX = 0.7;
-    const triangleX = playerRenderPosition.x + 0.5 * playerSize;
+    this.ctx.fillRect(
+      playerRenderPosition.x,
+      playerRenderPosition.y,
+      playerSize,
+      playerSize
+    );
 
-    this.ctx.save();
-    this.ctx.translate(triangleX, playerRenderPosition.y + playerSize / 2);
-    this.ctx.rotate(radians(this.player.rotation));
+    // const scaleX = 0.7;
+    // const triangleX = playerRenderPosition.x + 0.5 * playerSize;
 
-    this.ctx.beginPath();
-    this.ctx.moveTo((-scaleX * playerSize) / 2, playerSize / 2);
-    this.ctx.lineTo((scaleX * playerSize) / 2, playerSize / 2);
-    this.ctx.lineTo(0, -playerSize / 2);
-    this.ctx.lineTo((-scaleX * playerSize) / 2, playerSize / 2);
-    this.ctx.closePath();
-    this.ctx.fill();
+    // this.ctx.save();
+    // this.ctx.translate(triangleX, playerRenderPosition.y + playerSize / 2);
+    // this.ctx.rotate(radians(this.player.rotation));
 
-    this.ctx.restore();
+    // this.ctx.beginPath();
+    // this.ctx.moveTo((-scaleX * playerSize) / 2, playerSize / 2);
+    // this.ctx.lineTo((scaleX * playerSize) / 2, playerSize / 2);
+    // this.ctx.lineTo(0, -playerSize / 2);
+    // this.ctx.lineTo((-scaleX * playerSize) / 2, playerSize / 2);
+    // this.ctx.closePath();
+    // this.ctx.fill();
+
+    // this.ctx.restore();
   }
 
   private renderMask(): void {
