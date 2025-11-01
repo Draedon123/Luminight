@@ -1,5 +1,5 @@
-import { OrderedSet } from "./utils/OrderedSet";
-import { random } from "./utils/random";
+import { OrderedSet } from "../utils/OrderedSet";
+import { random } from "../utils/random";
 
 type Tile = {
   x: number;

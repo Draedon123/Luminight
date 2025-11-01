@@ -1,5 +1,5 @@
 import type { Maze } from "./Maze";
-import { Point } from "./utils/Point";
+import { Point } from "../utils/Point";
 
 class Player {
   public static readonly SIZE: number = 0.5;
