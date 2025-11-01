@@ -1,8 +1,14 @@
 import { Game } from "./game/Game";
 import "./style.css";
 
-const gameContainer = document.getElementById("game-container") as HTMLElement;
-const game = new Game();
+(async () => {
+  const gameContainer = document.getElementById(
+    "game-container"
+  ) as HTMLElement;
+  const game = new Game();
 
-game.mount(gameContainer);
-game.start();
+  await game.initialise();
+
+  game.mount(gameContainer);
+  game.start();
+})();

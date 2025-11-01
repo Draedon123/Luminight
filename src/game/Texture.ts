@@ -1,14 +1,23 @@
 class Texture {
-  private readonly frames: CanvasImageSource[];
+  public framesPerFrame: number;
+  public currentFrame: number;
 
   private frame: number;
+  private readonly frames: CanvasImageSource[];
+
   constructor(frames: CanvasImageSource[]) {
     this.frames = frames;
+    this.currentFrame = 0;
     this.frame = 0;
+    this.framesPerFrame = 1;
   }
 
   public get source(): CanvasImageSource {
-    return this.frames[this.frame % this.frames.length];
+    if (++this.frame % this.framesPerFrame === 0) {
+      this.currentFrame++;
+    }
+
+    return this.frames[this.currentFrame % this.frames.length];
   }
 
   public static async create(...sources: string[]): Promise<Texture> {

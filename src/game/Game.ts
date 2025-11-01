@@ -3,6 +3,7 @@ import { Maze } from "./Maze";
 import { Player } from "./Player";
 import { Loop } from "../utils/Loop";
 import { KeyboardManager } from "../utils/KeyboardManager";
+import { Portal } from "./items/Portal";
 
 const DEFAULT_KEYBINDS: GameOptions["keybinds"] = {
   FORWARD: "KeyW",
@@ -49,6 +50,9 @@ class Game {
   public flickerSpeed: number;
   public flickerRadius: number;
 
+  private initialised: boolean;
+  private portal!: Portal;
+
   constructor(options: Partial<GameOptions> = {}) {
     this.canvas = document.createElement("canvas");
     this.maze = new Maze(
@@ -67,6 +71,8 @@ class Game {
     this.flickerRadius = options.flickerRadius ?? 0.04;
     this.flickerSpeed = options.flickerSpeed ?? 1 / 160;
     this.playerAuraRadius = options.playerAuraRadius ?? 1.5;
+
+    this.initialised = false;
 
     this.loop.addCallback((frame) => {
       this.renderer.playerAuraRadius =
@@ -99,6 +105,22 @@ class Game {
 
       this.renderer.render();
     });
+  }
+
+  public async initialise(): Promise<void> {
+    if (this.initialised) {
+      return;
+    }
+
+    this.portal = await Portal.create();
+    this.portal.position = {
+      x: this.maze.width - 2,
+      y: this.maze.height - 2,
+    };
+
+    this.renderer.items.push(this.portal);
+
+    this.initialised = true;
   }
 
   public mount(parent: HTMLElement): void {
