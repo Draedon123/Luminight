@@ -20,7 +20,7 @@ body {
   width: 100vw;
   height: 100vh;
 
-  #contents {
+  .contents {
     position: fixed;
     height: 90vh;
     width: 90vw;
@@ -82,4 +82,8 @@ body {
     pointer-events: none;
     z-index: -1;
   }
+}
+
+.hidden {
+  display: none !important;
 }

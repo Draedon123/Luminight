@@ -35,6 +35,9 @@ type GameOptions = {
   lightningRarity: number;
   lightningBrightness: number;
   movementSpeed: number;
+
+  onWin: () => unknown;
+  onLose: () => unknown;
 };
 
 class Game {
@@ -56,6 +59,9 @@ class Game {
   public lightningDuration: number;
   public lightningRarity: number;
   public lightningBrightness: number;
+
+  public onWin: () => unknown;
+  public onLose: () => unknown;
 
   private initialised: boolean;
   private portal!: Portal;
@@ -83,6 +89,9 @@ class Game {
     this.lightningRarity = options.lightningRarity ?? 30;
     this.lightningBrightness = options.lightningBrightness ?? 0.8;
 
+    this.onWin = options.onWin ?? (() => {});
+    this.onLose = options.onLose ?? (() => {});
+
     this.renderer.auraIntensity = 0;
     this.lightningCurrentLifetime = 0;
 
@@ -103,6 +112,11 @@ class Game {
     this.portal.position = {
       x: this.maze.width - 2,
       y: this.maze.height - 2,
+    };
+
+    this.portal.onCollision = () => {
+      this.stop();
+      this.onWin();
     };
 
     await new Promise<void>((resolve, reject) => {

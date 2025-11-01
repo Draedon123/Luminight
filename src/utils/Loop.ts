@@ -83,7 +83,10 @@ class Loop {
     }
 
     this.lastFrameTime = tickTime;
-    this.frameID = requestAnimationFrame(this.tick.bind(this));
+
+    if (this.frameID !== null) {
+      this.frameID = requestAnimationFrame(this.tick.bind(this));
+    }
   }
 
   public get running(): boolean {

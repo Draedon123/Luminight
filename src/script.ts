@@ -11,10 +11,20 @@ import "./style.css";
   game.mount(gameContainer);
 
   const startButton = document.getElementById("start") as HTMLButtonElement;
+  const tutorialScreen = document.getElementById("tutorial") as HTMLElement;
+  const winScreen = document.getElementById("win") as HTMLElement;
   const banner = document.getElementById("banner") as HTMLElement;
 
+  tutorialScreen.classList.remove("hidden");
+
+  game.onWin = () => {
+    banner.classList.remove("hidden");
+    winScreen.classList.remove("hidden");
+  };
+
   startButton.addEventListener("click", () => {
-    banner.remove();
+    banner.classList.add("hidden");
+    tutorialScreen.classList.add("hidden");
     game.start();
   });
 })();
