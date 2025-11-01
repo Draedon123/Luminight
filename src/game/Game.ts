@@ -103,6 +103,10 @@ class Game {
         this.player.moveX(this.movementSpeed * frame.deltaTime);
       }
 
+      for (const item of this.renderer.items) {
+        item.checkCollisions(this.player);
+      }
+
       this.renderer.render();
     });
   }
