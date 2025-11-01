@@ -1,6 +1,6 @@
 import "./style.css";
-import { Maze } from "./Maze";
-import { Player } from "./Player";
+import { Maze } from "./game/Maze";
+import { Player } from "./game/Player";
 import { MazeRenderer } from "./rendering/MazeRenderer";
 // import { radians } from "./utils/angles";
 import { KeyboardManager } from "./utils/KeyboardManager";
@@ -25,7 +25,7 @@ const keyboardManager = new KeyboardManager(Object.values(KEYBINDS));
 keyboardManager.addEventListeners();
 
 const movementSpeed = 0.0025;
-const flickerRadius = 0.025;
+const flickerRadius = 0.04;
 const flickerSpeed = 1 / 160;
 const playerAuraRadius = 1.5;
 
@@ -36,7 +36,7 @@ loop.addCallback((frame) => {
     playerAuraRadius +
     flickerRadius * Math.cos(frame.frame * frame.deltaTime * flickerSpeed);
   renderer.auraIntensity = Math.min(
-    Math.max(0.5, renderer.auraIntensity + 0.1 * (Math.random() - 0.5)),
+    Math.max(0.2, renderer.auraIntensity + 0.15 * (Math.random() - 0.5)),
     1
   );
 

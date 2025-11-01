@@ -1,6 +1,6 @@
 import { Point } from "../utils/Point";
-import type { Maze } from "../Maze";
-import { Player } from "../Player";
+import type { Maze } from "../game/Maze";
+import { Player } from "../game/Player";
 // import { radians } from "../utils/angles";
 
 const TWO_PI = Math.PI * 2;
