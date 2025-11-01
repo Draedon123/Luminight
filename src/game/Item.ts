@@ -1,4 +1,4 @@
-import { MazeRenderer } from "src/rendering/MazeRenderer";
+import { MazeRenderer } from "src/game/MazeRenderer";
 import { Point } from "../utils/Point";
 // import { Player } from "./Player";
 import { Texture } from "./Texture";

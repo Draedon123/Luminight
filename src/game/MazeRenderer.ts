@@ -1,7 +1,7 @@
 import { Point } from "../utils/Point";
-import type { Maze } from "../game/Maze";
-import { Player } from "../game/Player";
-import { Item } from "../game/Item";
+import type { Maze } from "./Maze";
+import { Player } from "./Player";
+import { Item } from "./Item";
 
 const TWO_PI = Math.PI * 2;
 

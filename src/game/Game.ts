@@ -1,4 +1,4 @@
-import { MazeRenderer } from "../rendering/MazeRenderer";
+import { MazeRenderer } from "./MazeRenderer";
 import { Maze } from "./Maze";
 import { Player } from "./Player";
 import { FrameData, Loop } from "../utils/Loop";
