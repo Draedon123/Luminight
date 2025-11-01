@@ -19,7 +19,7 @@ class Maze {
     this.height = height % 2 === 0 ? height + 1 : height;
   }
 
-  public create(): void {
+  public create(): this {
     this.tiles.splice(0, this.tiles.length);
 
     for (let y = 0; y < this.width; y++) {
@@ -69,6 +69,8 @@ class Maze {
         }
       }
     }
+
+    return this;
   }
 
   public getTile(x: number, y: number): Tile {

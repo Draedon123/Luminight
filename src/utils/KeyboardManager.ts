@@ -6,9 +6,11 @@ class KeyboardManager {
     this.keybinds = new Set(keybinds);
   }
 
-  public addEventListeners(): void {
+  public addEventListeners(): this {
     document.addEventListener("keydown", this.onKeyDown.bind(this));
     document.addEventListener("keyup", this.onKeyUp.bind(this));
+
+    return this;
   }
 
   public isKeyDown(key: string): boolean {

@@ -1,7 +1,6 @@
 import { Point } from "../utils/Point";
 import type { Maze } from "../game/Maze";
 import { Player } from "../game/Player";
-// import { radians } from "../utils/angles";
 
 const TWO_PI = Math.PI * 2;
 
@@ -15,6 +14,11 @@ class MazeRenderer {
   private readonly ctx: CanvasRenderingContext2D;
   private readonly mask: HTMLCanvasElement;
   private readonly maskCTX: CanvasRenderingContext2D;
+  private readonly mazeCanvas: HTMLCanvasElement;
+  private readonly mazeCTX: CanvasRenderingContext2D;
+
+  private renderedMaze: boolean;
+
   constructor(canvas: HTMLCanvasElement, maze: Maze, player: Player) {
     this.maze = maze;
     this.player = player;
@@ -24,12 +28,19 @@ class MazeRenderer {
     this.ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
     this.mask = document.createElement("canvas");
     this.maskCTX = this.mask.getContext("2d") as CanvasRenderingContext2D;
+    this.mazeCanvas = document.createElement("canvas");
+    this.mazeCTX = this.mazeCanvas.getContext("2d") as CanvasRenderingContext2D;
+    this.renderedMaze = false;
 
     new ResizeObserver((entries) => {
       const box = entries[0].devicePixelContentBoxSize[0];
 
       const width = box.inlineSize;
       const height = box.blockSize;
+
+      if (width === 0 || height === 0) {
+        return;
+      }
 
       this.canvas.width = width;
       this.canvas.height = height;
@@ -40,6 +51,10 @@ class MazeRenderer {
 
       this.mask.width = mazeWidth;
       this.mask.height = mazeHeight;
+      this.mazeCanvas.width = mazeWidth;
+      this.mazeCanvas.height = mazeHeight;
+
+      this.renderedMaze = false;
 
       this.render();
     }).observe(canvas);
@@ -55,16 +70,26 @@ class MazeRenderer {
   }
 
   private renderMaze(): void {
-    const tileSize = this.getTileSize();
     const corner = this.getMazeCorner();
 
-    for (const tile of this.maze) {
-      const x = tileSize * tile.x + corner.x;
-      const y = tileSize * (this.maze.height - tile.y - 1) + corner.y;
+    if (!this.renderedMaze) {
+      const tileSize = this.getTileSize();
 
-      this.ctx.fillStyle = tile.isWall ? "#000" : "#fff";
-      this.ctx.fillRect(x, y, tileSize, tileSize);
+      this.mazeCTX.strokeStyle = "#000";
+
+      for (const tile of this.maze) {
+        const x = tileSize * tile.x;
+        const y = tileSize * (this.maze.height - tile.y - 1);
+
+        this.mazeCTX.fillStyle = tile.isWall ? "#000" : "#fff";
+        this.mazeCTX.fillRect(x, y, tileSize, tileSize);
+        this.mazeCTX.strokeRect(x, y, tileSize, tileSize);
+      }
+
+      this.renderedMaze = true;
     }
+
+    this.ctx.drawImage(this.mazeCanvas, corner.x, corner.y);
   }
 
   private renderPlayer(): void {
