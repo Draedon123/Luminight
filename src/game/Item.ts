@@ -41,7 +41,6 @@ class Item {
       itemTop > playerBottom;
 
     if (collided) {
-      console.log("collided");
       this.onCollision();
     }
   }
