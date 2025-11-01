@@ -1,5 +1,5 @@
 import { Game } from "./game/Game";
-import "./style.css";
+import "./style.scss";
 
 (async () => {
   const gameContainer = document.getElementById(
