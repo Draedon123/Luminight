@@ -1,7 +1,7 @@
 import { MazeRenderer } from "../rendering/MazeRenderer";
 import { Maze } from "./Maze";
 import { Player } from "./Player";
-import { Loop } from "../utils/Loop";
+import { FrameData, Loop } from "../utils/Loop";
 import { KeyboardManager } from "../utils/KeyboardManager";
 import { Portal } from "./items/Portal";
 
@@ -31,6 +31,9 @@ type GameOptions = {
   flickerSpeed: number;
   flickerRadius: number;
   playerAuraRadius: number;
+  lightningDuration_ms: number;
+  lightningRarity: number;
+  lightningBrightness: number;
   movementSpeed: number;
 };
 
@@ -49,9 +52,13 @@ class Game {
   public movementSpeed: number;
   public flickerSpeed: number;
   public flickerRadius: number;
+  public lightningDuration: number;
+  public lightningRarity: number;
+  public lightningBrightness: number;
 
   private initialised: boolean;
   private portal!: Portal;
+  private lightningCurrentLifetime: number;
 
   constructor(options: Partial<GameOptions> = {}) {
     this.canvas = document.createElement("canvas");
@@ -71,44 +78,16 @@ class Game {
     this.flickerRadius = options.flickerRadius ?? 0.04;
     this.flickerSpeed = options.flickerSpeed ?? 1 / 160;
     this.playerAuraRadius = options.playerAuraRadius ?? 1.5;
+    this.lightningDuration = options.lightningDuration_ms ?? 500;
+    this.lightningRarity = options.lightningRarity ?? 30;
+    this.lightningBrightness = options.lightningBrightness ?? 0.8;
+
+    this.renderer.auraIntensity = 0;
+    this.lightningCurrentLifetime = 0;
 
     this.initialised = false;
 
-    this.loop.addCallback((frame) => {
-      this.renderer.playerAuraRadius =
-        this.playerAuraRadius +
-        this.flickerRadius *
-          Math.cos(frame.frame * frame.deltaTime * this.flickerSpeed);
-      this.renderer.auraIntensity = Math.min(
-        Math.max(
-          0.2,
-          this.renderer.auraIntensity + 0.15 * (Math.random() - 0.5)
-        ),
-        1
-      );
-
-      if (this.keyboardManager.isKeyDown(this.keybinds.FORWARD)) {
-        this.player.moveY(this.movementSpeed * frame.deltaTime);
-      }
-
-      if (this.keyboardManager.isKeyDown(this.keybinds.BACKWARDS)) {
-        this.player.moveY(-this.movementSpeed * frame.deltaTime);
-      }
-
-      if (this.keyboardManager.isKeyDown(this.keybinds.LEFT)) {
-        this.player.moveX(-this.movementSpeed * frame.deltaTime);
-      }
-
-      if (this.keyboardManager.isKeyDown(this.keybinds.RIGHT)) {
-        this.player.moveX(this.movementSpeed * frame.deltaTime);
-      }
-
-      for (const item of this.renderer.items) {
-        item.checkCollisions(this.player);
-      }
-
-      this.renderer.render();
-    });
+    this.loop.addCallback(this.tick.bind(this));
   }
 
   public async initialise(): Promise<void> {
@@ -137,6 +116,65 @@ class Game {
 
   public start(): void {
     this.loop.start();
+  }
+
+  private tick(frame: FrameData): void {
+    this.flicker(frame.frame, frame.deltaTime);
+    this.lightningFlash(frame.deltaTime);
+    this.checkKeyboard(frame.deltaTime);
+
+    for (const item of this.renderer.items) {
+      item.checkCollisions(this.player);
+    }
+
+    this.renderer.render();
+  }
+
+  private flicker(frame: number, deltaTime: number): void {
+    this.renderer.playerAuraRadius =
+      this.playerAuraRadius +
+      this.flickerRadius * Math.cos(frame * deltaTime * this.flickerSpeed);
+    this.renderer.auraIntensity = Math.min(
+      Math.max(0.2, this.renderer.auraIntensity + 0.15 * (Math.random() - 0.5)),
+      1
+    );
+  }
+
+  private checkKeyboard(deltaTime: number): void {
+    if (this.keyboardManager.isKeyDown(this.keybinds.FORWARD)) {
+      this.player.moveY(this.movementSpeed * deltaTime);
+    }
+
+    if (this.keyboardManager.isKeyDown(this.keybinds.BACKWARDS)) {
+      this.player.moveY(-this.movementSpeed * deltaTime);
+    }
+
+    if (this.keyboardManager.isKeyDown(this.keybinds.LEFT)) {
+      this.player.moveX(-this.movementSpeed * deltaTime);
+    }
+
+    if (this.keyboardManager.isKeyDown(this.keybinds.RIGHT)) {
+      this.player.moveX(this.movementSpeed * deltaTime);
+    }
+  }
+
+  private lightningFlash(deltaTime: number): void {
+    this.renderer.maskAlpha =
+      1 -
+      (this.lightningBrightness * this.lightningCurrentLifetime) /
+        this.lightningDuration;
+
+    this.lightningCurrentLifetime = Math.max(
+      this.lightningCurrentLifetime - deltaTime,
+      0
+    );
+
+    const probability = 1 / (this.lightningRarity * deltaTime);
+    if (Math.random() > probability || deltaTime === 0) {
+      return;
+    }
+
+    this.lightningCurrentLifetime = this.lightningDuration;
   }
 
   public stop(): void {

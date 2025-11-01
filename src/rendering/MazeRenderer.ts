@@ -10,6 +10,8 @@ class MazeRenderer {
   public player: Player;
   public playerAuraRadius: number;
   public auraIntensity: number;
+  /** 0-1 */
+  public maskAlpha: number;
   public items: Item[];
 
   public readonly ctx: CanvasRenderingContext2D;
@@ -26,6 +28,7 @@ class MazeRenderer {
     this.player = player;
     this.playerAuraRadius = 1.5;
     this.auraIntensity = 1;
+    this.maskAlpha = 255;
     this.canvas = canvas;
     this.ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
     this.mask = document.createElement("canvas");
@@ -122,8 +125,10 @@ class MazeRenderer {
       Player.SIZE
     );
     const playerSize = tileSize * Player.SIZE;
+    const maskColour = `rgba(32, 32, 32, ${this.maskAlpha})`;
 
-    this.maskCTX.fillStyle = "#222";
+    this.maskCTX.clearRect(0, 0, this.mask.width, this.mask.height);
+    this.maskCTX.fillStyle = maskColour;
     this.maskCTX.fillRect(0, 0, this.mask.width, this.mask.height);
 
     const auraX = playerRenderPosition.x - mazeCorner.x + playerSize / 2;
@@ -153,7 +158,7 @@ class MazeRenderer {
 
     spotlight.addColorStop(0, "#0000");
     spotlight.addColorStop(0.7, "#1118");
-    spotlight.addColorStop(1, "#222");
+    spotlight.addColorStop(1, maskColour);
 
     this.maskCTX.fillStyle = spotlight;
     this.maskCTX.fill();
