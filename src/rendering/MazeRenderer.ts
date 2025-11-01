@@ -1,6 +1,7 @@
 import { Point } from "../utils/Point";
 import type { Maze } from "../game/Maze";
 import { Player } from "../game/Player";
+import { Item } from "../game/Item";
 
 const TWO_PI = Math.PI * 2;
 
@@ -9,9 +10,10 @@ class MazeRenderer {
   public player: Player;
   public playerAuraRadius: number;
   public auraIntensity: number;
+  public items: Item[];
 
+  public readonly ctx: CanvasRenderingContext2D;
   private readonly canvas: HTMLCanvasElement;
-  private readonly ctx: CanvasRenderingContext2D;
   private readonly mask: HTMLCanvasElement;
   private readonly maskCTX: CanvasRenderingContext2D;
   private readonly mazeCanvas: HTMLCanvasElement;
@@ -31,6 +33,7 @@ class MazeRenderer {
     this.mazeCanvas = document.createElement("canvas");
     this.mazeCTX = this.mazeCanvas.getContext("2d") as CanvasRenderingContext2D;
     this.renderedMaze = false;
+    this.items = [];
 
     new ResizeObserver((entries) => {
       const box = entries[0].devicePixelContentBoxSize[0];
@@ -65,6 +68,7 @@ class MazeRenderer {
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
     this.renderMaze();
+    this.renderItems();
     this.renderPlayer();
     this.renderMask();
   }
@@ -93,9 +97,11 @@ class MazeRenderer {
   }
 
   private renderPlayer(): void {
-    const tileSize = this.getTileSize();
-    const playerSize = Player.SIZE * tileSize;
-    const playerRenderPosition = this.getPlayerRenderPosition();
+    const playerSize = Player.SIZE * this.getTileSize();
+    const playerRenderPosition = this.getRenderPosition(
+      this.player.position,
+      Player.SIZE
+    );
 
     this.ctx.fillStyle = "#f00";
 
@@ -111,7 +117,10 @@ class MazeRenderer {
     const mazeCorner = this.getMazeCorner();
     const tileSize = this.getTileSize();
     const auraRadius = Math.floor(this.playerAuraRadius * tileSize);
-    const playerRenderPosition = this.getPlayerRenderPosition();
+    const playerRenderPosition = this.getRenderPosition(
+      this.player.position,
+      Player.SIZE
+    );
     const playerSize = tileSize * Player.SIZE;
 
     this.maskCTX.fillStyle = "#222";
@@ -157,14 +166,10 @@ class MazeRenderer {
     this.ctx.drawImage(this.mask, mazeCorner.x, mazeCorner.y);
   }
 
-  private getTileSize(): number {
-    return Math.floor(
-      0.95 *
-        Math.min(
-          this.canvas.width / this.maze.width,
-          this.canvas.height / this.maze.height
-        )
-    );
+  private renderItems(): void {
+    for (const item of this.items) {
+      item.render(this);
+    }
   }
 
   private getMazeCorner(): Point {
@@ -176,17 +181,25 @@ class MazeRenderer {
     );
   }
 
-  private getPlayerRenderPosition(): Point {
+  public getTileSize(): number {
+    return Math.floor(
+      0.95 *
+        Math.min(
+          this.canvas.width / this.maze.width,
+          this.canvas.height / this.maze.height
+        )
+    );
+  }
+
+  public getRenderPosition(mazePosition: Point, size: number): Point {
     const tileSize = this.getTileSize();
-    const playerSize = Player.SIZE * tileSize;
+    const playerSize = size * tileSize;
     const corner = this.getMazeCorner();
 
     return new Point(
-      corner.x +
-        this.player.position.x * tileSize +
-        0.5 * (tileSize - playerSize),
+      corner.x + mazePosition.x * tileSize + 0.5 * (tileSize - playerSize),
       corner.y +
-        (this.maze.height - this.player.position.y - 1) * tileSize +
+        (this.maze.height - mazePosition.y - 1) * tileSize +
         0.5 * (tileSize - playerSize)
     );
   }
