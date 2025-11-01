@@ -46,6 +46,7 @@ class Game {
   private readonly loop: Loop;
   private readonly keyboardManager: KeyboardManager;
   private readonly keybinds: GameOptions["keybinds"];
+  private readonly thunderAudio: HTMLAudioElement;
 
   private playerAuraRadius: number;
 
@@ -85,6 +86,9 @@ class Game {
     this.renderer.auraIntensity = 0;
     this.lightningCurrentLifetime = 0;
 
+    this.thunderAudio = document.createElement("audio");
+    this.thunderAudio.volume = 0.1;
+
     this.initialised = false;
 
     this.loop.addCallback(this.tick.bind(this));
@@ -100,6 +104,21 @@ class Game {
       x: this.maze.width - 2,
       y: this.maze.height - 2,
     };
+
+    await new Promise<void>((resolve, reject) => {
+      const callback = () => {
+        resolve();
+        this.thunderAudio.removeEventListener("canplaythrough", callback);
+      };
+
+      this.thunderAudio.addEventListener("canplaythrough", callback);
+      this.thunderAudio.onerror = reject;
+      this.thunderAudio.src = "/Luminight/thunder.mp3";
+    });
+
+    this.thunderAudio.addEventListener("ended", () => {
+      this.thunderAudio.pause();
+    });
 
     this.renderer.items.push(this.portal);
 
@@ -170,8 +189,17 @@ class Game {
     );
 
     const probability = 1 / (this.lightningRarity * deltaTime);
-    if (Math.random() > probability || deltaTime === 0) {
+    if (Math.random() > probability) {
       return;
+    }
+
+    if (this.thunderAudio.paused) {
+      this.thunderAudio.play();
+    } else {
+      // ensure the audio can overlap with itself
+      const audio = this.thunderAudio.cloneNode() as HTMLAudioElement;
+      audio.volume = 0.1;
+      audio.play();
     }
 
     this.lightningCurrentLifetime = this.lightningDuration;
