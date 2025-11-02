@@ -1,7 +1,7 @@
 import { Point } from "../utils/Point";
 import type { Maze } from "./Maze";
 import { Player } from "./Player";
-import { Collidable } from "./Collidable";
+import { Entity } from "./entities/Entity";
 
 const TWO_PI = Math.PI * 2;
 
@@ -12,7 +12,7 @@ class MazeRenderer {
   public auraIntensity: number;
   /** 0-1 */
   public maskAlpha: number;
-  public items: Collidable[];
+  public entities: Entity[];
 
   public readonly ctx: CanvasRenderingContext2D;
   private readonly canvas: HTMLCanvasElement;
@@ -36,7 +36,7 @@ class MazeRenderer {
     this.mazeCanvas = document.createElement("canvas");
     this.mazeCTX = this.mazeCanvas.getContext("2d") as CanvasRenderingContext2D;
     this.renderedMaze = false;
-    this.items = [];
+    this.entities = [];
 
     new ResizeObserver((entries) => {
       const box = entries[0].devicePixelContentBoxSize[0];
@@ -71,7 +71,7 @@ class MazeRenderer {
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
     this.renderMaze();
-    this.renderItems();
+    this.renderEntities();
     this.renderPlayer();
     this.renderMask();
   }
@@ -171,9 +171,9 @@ class MazeRenderer {
     this.ctx.drawImage(this.mask, mazeCorner.x, mazeCorner.y);
   }
 
-  private renderItems(): void {
-    for (const item of this.items) {
-      item.render(this);
+  private renderEntities(): void {
+    for (const entity of this.entities) {
+      entity.render(this);
     }
   }
 

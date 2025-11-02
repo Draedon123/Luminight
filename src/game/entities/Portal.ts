@@ -1,7 +1,7 @@
-import { Collidable } from "../Collidable";
+import { Entity } from "./Entity";
 import { Texture } from "../Texture";
 
-class Portal extends Collidable {
+class Portal extends Entity {
   constructor(texture: Texture) {
     super({ texture, size: 1 });
   }

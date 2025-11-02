@@ -1,7 +1,7 @@
 import { MinPriorityQueue } from "../../utils/MinPriorityQueue";
 import { empty } from "../../utils/array";
 import { Point } from "../../utils/Point";
-import { Collidable } from "../Collidable";
+import { Entity } from "./Entity";
 import { Maze, Tile } from "../Maze";
 import { Texture } from "../Texture";
 
@@ -9,7 +9,7 @@ type EnemyOptions = {
   movementSpeed: number;
 };
 
-class Enemy extends Collidable {
+class Enemy extends Entity {
   public movementSpeed: number;
 
   private movementQueue: Point[];
@@ -108,12 +108,19 @@ class Enemy extends Collidable {
     }
   }
 
-  public tick(deltaTime: number): void {
+  public tick(deltaTime: number, maze: Maze): void {
     if (this.movementQueue.length === 0) {
-      return;
+      const moveTo = new Point(0, 0);
+
+      while (maze.getTile(moveTo.x, moveTo.y).isWall) {
+        moveTo.x = Math.floor(Math.random() * maze.width);
+        moveTo.y = Math.floor(Math.random() * maze.height);
+      }
+
+      this.pathfind(moveTo, maze);
     }
 
-    let target = this.movementQueue[0];
+    const target = this.movementQueue[0];
 
     let dx = target.x - this.position.x;
     let dy = target.y - this.position.y;
@@ -121,9 +128,10 @@ class Enemy extends Collidable {
     if (Math.abs(dx) + Math.abs(dy) <= 1e-2) {
       this.movementQueue.shift();
 
-      target = this.movementQueue[0];
-      dx = target.x - this.position.x;
-      dy = target.y - this.position.y;
+      this.position.x = Math.round(this.position.x);
+      this.position.y = Math.round(this.position.y);
+
+      return;
     }
 
     const normalisation = (this.movementSpeed * deltaTime) / Math.hypot(dx, dy);

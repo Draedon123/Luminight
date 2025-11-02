@@ -1,22 +1,21 @@
-import { MazeRenderer } from "src/game/MazeRenderer";
-import { Point } from "../utils/Point";
-// import { Player } from "./Player";
-import { Texture } from "./Texture";
-import { Player } from "./Player";
+import { MazeRenderer } from "../MazeRenderer";
+import { Point } from "../../utils/Point";
+import { Texture } from "../Texture";
+import { Player } from "../Player";
 
-type CollidableOptions = {
+type EntityOptions = {
   texture: Texture;
   size?: number;
   onCollision?: () => unknown;
 };
 
-class Collidable {
+class Entity {
   public position: Point;
   public size: number;
   public onCollision: () => unknown;
 
   public readonly texture: Texture;
-  constructor(options: CollidableOptions) {
+  constructor(options: EntityOptions) {
     this.position = new Point();
     this.size = options.size ?? 0.5;
     this.texture = options.texture;
@@ -59,4 +58,4 @@ class Collidable {
   }
 }
 
-export { Collidable };
+export { Entity };

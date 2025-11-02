@@ -12,3 +12,4 @@ A simple and spooky maze game
 - https://www.youtube.com/watch?v=mF3ROkKc084
 - https://www.geeksforgeeks.org/dsa/binary-heap/
 - https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
+- https://agusstt.itch.io/tiny-ghost-animated

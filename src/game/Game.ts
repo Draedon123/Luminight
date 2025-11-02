@@ -6,7 +6,6 @@ import { KeyboardManager } from "../utils/KeyboardManager";
 import { Portal } from "./entities/Portal";
 import { Enemy } from "./entities/Enemy";
 import { Texture } from "./Texture";
-import { Point } from "../utils/Point";
 
 const DEFAULT_KEYBINDS: GameOptions["keybinds"] = {
   FORWARD: "KeyW",
@@ -38,6 +37,7 @@ type GameOptions = {
   lightningRarity: number;
   lightningBrightness: number;
   movementSpeed: number;
+  enemyCount: number;
 
   onWin: () => unknown;
   onLose: () => unknown;
@@ -62,6 +62,7 @@ class Game {
   public lightningDuration: number;
   public lightningRarity: number;
   public lightningBrightness: number;
+  public enemyCount: number;
 
   public onWin: () => unknown;
   public onLose: () => unknown;
@@ -69,9 +70,6 @@ class Game {
   private initialised: boolean;
   private portal!: Portal;
   private lightningCurrentLifetime: number;
-
-  private test!: Enemy;
-
   constructor(options: Partial<GameOptions> = {}) {
     this.canvas = document.createElement("canvas");
     this.maze = new Maze(
@@ -89,10 +87,11 @@ class Game {
     this.movementSpeed = options.movementSpeed ?? 0.0025;
     this.flickerRadius = options.flickerRadius ?? 0.04;
     this.flickerSpeed = options.flickerSpeed ?? 1 / 160;
-    this.playerAuraRadius = options.playerAuraRadius ?? 1.5;
+    this.playerAuraRadius = options.playerAuraRadius ?? 2;
     this.lightningDuration = options.lightningDuration_ms ?? 500;
     this.lightningRarity = options.lightningRarity ?? 25;
     this.lightningBrightness = options.lightningBrightness ?? 0.8;
+    this.enemyCount = options.enemyCount ?? 5;
 
     this.onWin = options.onWin ?? (() => {});
     this.onLose = options.onLose ?? (() => {});
@@ -139,14 +138,28 @@ class Game {
       this.thunderAudio.pause();
     });
 
-    this.test = new Enemy(await Texture.create("/Luminight/portal/0001.png"), {
-      movementSpeed: 0.0025,
-    });
-    this.test.position.x = this.portal.position.x;
-    this.test.position.y = this.portal.position.y;
-    this.test.pathfind(new Point(1, 1), this.maze);
+    const ghostTexture = await Texture.create(
+      ...Array.from({ length: 4 }, (_, i) => `/Luminight/ghost/${i}.png`)
+    );
 
-    this.renderer.items.push(this.portal, this.test);
+    const enemies = Array.from({ length: this.enemyCount }, () => {
+      const enemy = new Enemy(ghostTexture, {
+        movementSpeed: 0.8 * this.movementSpeed,
+      });
+
+      do {
+        enemy.position.x = Math.floor(Math.random() * this.maze.width);
+        enemy.position.y = Math.floor(Math.random() * this.maze.height);
+      } while (
+        (enemy.position.x < this.maze.width / 2 &&
+          enemy.position.y < this.maze.height / 2) ||
+        this.maze.getTile(enemy.position.x, enemy.position.y).isWall
+      );
+
+      return enemy;
+    });
+
+    this.renderer.entities.push(this.portal, ...enemies);
 
     this.initialised = true;
   }
@@ -168,11 +181,13 @@ class Game {
     this.lightningFlash(frame.deltaTime);
     this.checkKeyboard(frame.deltaTime);
 
-    for (const item of this.renderer.items) {
-      item.checkCollisions(this.player);
-    }
+    for (const entity of this.renderer.entities) {
+      entity.checkCollisions(this.player);
 
-    this.test.tick(frame.deltaTime);
+      if (entity instanceof Enemy) {
+        entity.tick(frame.deltaTime, this.maze);
+      }
+    }
 
     this.renderer.render();
   }
