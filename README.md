@@ -11,3 +11,4 @@ A simple and spooky maze game
 - https://fonts.google.com/specimen/Emilys+Candy
 - https://www.youtube.com/watch?v=mF3ROkKc084
 - https://www.geeksforgeeks.org/dsa/binary-heap/
+- https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm

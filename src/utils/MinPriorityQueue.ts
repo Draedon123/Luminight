@@ -4,82 +4,126 @@ type QueueNode<T> = {
 };
 
 class MinPriorityQueue<T> {
-  private readonly data: QueueNode<T>[];
-  constructor() {
-    this.data = [];
-  }
+  private readonly data: QueueNode<T>[] = [];
+  private readonly indexMap: Map<T, number> = new Map();
 
-  private left(i: number) {
+  private left(i: number): number {
     return 2 * i + 1;
   }
 
-  private right(i: number) {
+  private right(i: number): number {
     return 2 * i + 2;
   }
 
-  private parent(i: number) {
+  private parent(i: number): number {
     return Math.floor((i - 1) / 2);
   }
 
-  public peek() {
+  private swap(i: number, j: number): void {
+    [this.data[i], this.data[j]] = [this.data[j], this.data[i]];
+
+    this.indexMap.set(this.data[i].value, i);
+    this.indexMap.set(this.data[j].value, j);
+  }
+
+  public peek(): QueueNode<T> {
     return this.data[0];
   }
 
-  public insert(value: QueueNode<T>) {
-    this.data.push(value);
+  public insert(value: T, priority: number): void {
+    if (this.indexMap.has(value)) {
+      this.decreasePriority(value, priority);
+      return;
+    }
 
-    let i = this.data.length - 1;
-    while (i > 0 && this.data[this.parent(i)] > this.data[i]) {
+    const node = { value, priority };
+    this.data.push(node);
+
+    const i = this.data.length - 1;
+    this.indexMap.set(value, i);
+    this.bubbleUp(i);
+  }
+
+  private bubbleUp(i: number): void {
+    while (
+      i > 0 &&
+      this.data[this.parent(i)].priority > this.data[i].priority
+    ) {
       const parent = this.parent(i);
-      [this.data[i], this.data[parent]] = [this.data[parent], this.data[i]];
+      this.swap(i, parent);
       i = parent;
     }
   }
 
-  public extractMin() {
-    if (this.data.length == 1) {
-      return this.data.pop();
+  public extractMin(): QueueNode<T> | null {
+    if (this.data.length === 0) {
+      return null;
     }
 
-    const min = this.data[0];
+    const root = this.data[0];
+    const last = this.data.pop() as QueueNode<T>;
 
-    this.data[0] = this.data[this.data.length - 1];
-    this.data.pop();
-    this.minHeapify(0);
+    this.indexMap.delete(root.value);
 
-    return min;
+    if (this.data.length > 0) {
+      this.data[0] = last;
+      this.indexMap.set(last.value, 0);
+      this.minHeapify(0);
+    }
+
+    return root;
   }
 
-  private minHeapify(root: number) {
-    const length = this.data.length;
+  private minHeapify(i: number): void {
+    const left = this.left(i);
+    const right = this.right(i);
 
-    if (length === 1) {
-      return;
-    }
+    let smallest = i;
 
-    const left = this.left(root);
-    const right = this.right(root);
-
-    let smallest = root;
-
-    if (left < length && this.data[left].priority < this.data[root].priority) {
+    if (
+      left < this.data.length &&
+      this.data[left].priority < this.data[smallest].priority
+    ) {
       smallest = left;
     }
+
     if (
-      right < length &&
+      right < this.data.length &&
       this.data[right].priority < this.data[smallest].priority
     ) {
       smallest = right;
     }
 
-    if (smallest !== root) {
-      [this.data[root], this.data[smallest]] = [
-        this.data[smallest],
-        this.data[root],
-      ];
-
+    if (smallest !== i) {
+      this.swap(i, smallest);
       this.minHeapify(smallest);
     }
+  }
+
+  public decreasePriority(value: T, newPriority: number): void {
+    const i = this.indexMap.get(value);
+    if (i === undefined) {
+      return;
+    }
+
+    if (newPriority >= this.data[i].priority) {
+      return;
+    }
+
+    this.data[i].priority = newPriority;
+    this.bubbleUp(i);
+  }
+
+  public has(value: T): boolean {
+    return this.indexMap.has(value);
+  }
+
+  public isEmpty(): boolean {
+    return this.data.length === 0;
+  }
+
+  public size(): number {
+    return this.data.length;
   }
 }
 
