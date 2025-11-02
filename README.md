@@ -1,8 +1,8 @@
-<!-- ![Banner](banner.png) -->
+![Banner](banner.png)
 
 # Luminight
 
-A simple and spooky maze game
+A simple maze game where you try to locate a portal in darkness while also running from ghosts
 
 # References
 
