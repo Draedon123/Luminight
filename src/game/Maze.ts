@@ -68,6 +68,22 @@ class Maze {
       }
     }
 
+    const wallDeletionChance = 0.01;
+    for (const wall of this.tiles) {
+      if (
+        !wall.isWall ||
+        Math.random() > wallDeletionChance ||
+        wall.position.x === 0 ||
+        wall.position.y === 0 ||
+        wall.position.x === this.width - 1 ||
+        wall.position.y === this.height - 1
+      ) {
+        continue;
+      }
+
+      wall.isWall = false;
+    }
+
     return this;
   }
 

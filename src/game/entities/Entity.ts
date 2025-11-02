@@ -12,20 +12,24 @@ type EntityOptions = {
 class Entity {
   public position: Point;
   public size: number;
+  public hitboxMultiplier: number;
   public onCollision: () => unknown;
 
   public readonly texture: Texture;
   constructor(options: EntityOptions) {
     this.position = new Point();
     this.size = options.size ?? 0.5;
+    this.hitboxMultiplier = 1;
     this.texture = options.texture;
     this.onCollision = options.onCollision ?? (() => {});
   }
 
   public checkCollisions(player: Player): void {
-    const itemLeft = this.position.x + (1 - this.size) / 2;
+    const itemLeft =
+      this.position.x + (1 - this.hitboxMultiplier * this.size) / 2;
     const itemRight = itemLeft + this.size;
-    const itemBottom = this.position.y + (1 - this.size) / 2;
+    const itemBottom =
+      this.position.y + (1 - this.hitboxMultiplier * this.size) / 2;
     const itemTop = itemBottom + this.size;
 
     const playerLeft = player.position.x + (1 - Player.SIZE) / 2;

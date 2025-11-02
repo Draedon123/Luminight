@@ -23,10 +23,12 @@ class Player {
     const newX = this.position.x + dx;
     const newY = this.position.y + dy;
 
-    const left = Math.floor(newX + (1 - Player.SIZE) / 2);
-    const right = Math.floor(newX + (1 + Player.SIZE) / 2);
-    const bottom = Math.floor(newY + (1 - Player.SIZE) / 2);
-    const top = Math.floor(newY + (1 + Player.SIZE) / 2);
+    const lenience = 0.9;
+
+    const left = Math.floor(newX + (1 - lenience * Player.SIZE) / 2);
+    const right = Math.floor(newX + (1 + lenience * Player.SIZE) / 2);
+    const bottom = Math.floor(newY + (1 - lenience * Player.SIZE) / 2);
+    const top = Math.floor(newY + (1 + lenience * Player.SIZE) / 2);
 
     if (
       (dx < 0 &&
