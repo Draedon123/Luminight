@@ -4,6 +4,9 @@ import { Player } from "./Player";
 import { FrameData, Loop } from "../utils/Loop";
 import { KeyboardManager } from "../utils/KeyboardManager";
 import { Portal } from "./entities/Portal";
+import { Enemy } from "./entities/Enemy";
+import { Texture } from "./Texture";
+import { Point } from "../utils/Point";
 
 const DEFAULT_KEYBINDS: GameOptions["keybinds"] = {
   FORWARD: "KeyW",
@@ -66,6 +69,8 @@ class Game {
   private initialised: boolean;
   private portal!: Portal;
   private lightningCurrentLifetime: number;
+
+  private test!: Enemy;
 
   constructor(options: Partial<GameOptions> = {}) {
     this.canvas = document.createElement("canvas");
@@ -134,7 +139,14 @@ class Game {
       this.thunderAudio.pause();
     });
 
-    this.renderer.items.push(this.portal);
+    this.test = new Enemy(await Texture.create("/Luminight/portal/0001.png"), {
+      movementSpeed: 0.0025,
+    });
+    this.test.position.x = this.portal.position.x;
+    this.test.position.y = this.portal.position.y;
+    this.test.pathfind(new Point(1, 1), this.maze);
+
+    this.renderer.items.push(this.portal, this.test);
 
     this.initialised = true;
   }
@@ -159,6 +171,8 @@ class Game {
     for (const item of this.renderer.items) {
       item.checkCollisions(this.player);
     }
+
+    this.test.tick(frame.deltaTime);
 
     this.renderer.render();
   }

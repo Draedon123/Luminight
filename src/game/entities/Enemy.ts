@@ -1,4 +1,4 @@
-import { MinPriorityQueue } from "src/utils/MinPriorityQueue";
+import { MinPriorityQueue } from "../../utils/MinPriorityQueue";
 import { empty } from "../../utils/array";
 import { Point } from "../../utils/Point";
 import { Collidable } from "../Collidable";
@@ -34,12 +34,13 @@ class Enemy extends Collidable {
     for (const tile of maze.tiles) {
       const dist =
         tile.x === this.position.x && tile.y === this.position.y ? 0 : Infinity;
-      distanceMap.set(key(tile.x, tile.y), dist);
-      previous.set(key(tile.x, tile.y), null);
-      queue.insert({ tile, distance: dist }, dist);
+
+      const tileKey = key(tile.x, tile.y);
+      distanceMap.set(tileKey, dist);
+      previous.set(tileKey, null);
+      queue.insert({ tile, distance: dist }, dist, tileKey);
     }
 
-    // Dijkstra’s main loop
     while (!queue.isEmpty()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const min = queue.extractMin()!;
@@ -65,24 +66,24 @@ class Enemy extends Collidable {
         [current.x, current.y - 1],
       ];
 
-      for (const [nx, ny] of neighbours) {
-        const neighbor = maze.getTile(nx, ny);
-        if (neighbor === undefined) {
+      for (const [x, y] of neighbours) {
+        const neighbour = maze.getTile(x, y);
+        if (neighbour === undefined) {
           continue;
         }
 
-        if (neighbor.isWall) {
+        if (neighbour.isWall) {
           continue;
         }
 
-        const neighborKey = key(nx, ny);
+        const neighbourKey = key(x, y);
         const alt = currentDist + 1;
 
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        if (alt < distanceMap.get(neighborKey)!) {
-          distanceMap.set(neighborKey, alt);
-          previous.set(neighborKey, current);
-          queue.decreasePriority({ tile: neighbor, distance: alt }, alt);
+        if (alt < distanceMap.get(neighbourKey)!) {
+          distanceMap.set(neighbourKey, alt);
+          previous.set(neighbourKey, current);
+          queue.decreasePriority(neighbourKey, alt);
         }
       }
     }
@@ -112,22 +113,26 @@ class Enemy extends Collidable {
       return;
     }
 
-    const target = this.movementQueue[0];
+    let target = this.movementQueue[0];
 
     let dx = target.x - this.position.x;
     let dy = target.y - this.position.y;
 
-    const normalisation = this.movementSpeed * deltaTime * Math.hypot(dx, dy);
+    if (Math.abs(dx) + Math.abs(dy) <= 1e-2) {
+      this.movementQueue.shift();
+
+      target = this.movementQueue[0];
+      dx = target.x - this.position.x;
+      dy = target.y - this.position.y;
+    }
+
+    const normalisation = (this.movementSpeed * deltaTime) / Math.hypot(dx, dy);
 
     dx *= normalisation;
     dy *= normalisation;
 
     this.position.x += dx;
     this.position.y += dy;
-
-    if (this.position.x - target.x + this.position.y - target.y <= 1e-2) {
-      this.movementQueue.shift();
-    }
   }
 }
 

@@ -1,11 +1,12 @@
 type QueueNode<T> = {
   value: T;
   priority: number;
+  key: string;
 };
 
 class MinPriorityQueue<T> {
   private readonly data: QueueNode<T>[] = [];
-  private readonly indexMap: Map<T, number> = new Map();
+  private readonly indexMap: Map<string, number> = new Map();
 
   private left(i: number): number {
     return 2 * i + 1;
@@ -22,25 +23,25 @@ class MinPriorityQueue<T> {
   private swap(i: number, j: number): void {
     [this.data[i], this.data[j]] = [this.data[j], this.data[i]];
 
-    this.indexMap.set(this.data[i].value, i);
-    this.indexMap.set(this.data[j].value, j);
+    this.indexMap.set(this.data[i].key, i);
+    this.indexMap.set(this.data[j].key, j);
   }
 
   public peek(): QueueNode<T> {
     return this.data[0];
   }
 
-  public insert(value: T, priority: number): void {
-    if (this.indexMap.has(value)) {
-      this.decreasePriority(value, priority);
+  public insert(value: T, priority: number, key: string): void {
+    if (this.indexMap.has(key)) {
+      this.decreasePriority(key, priority);
       return;
     }
 
-    const node = { value, priority };
+    const node = { value, priority, key };
     this.data.push(node);
 
     const i = this.data.length - 1;
-    this.indexMap.set(value, i);
+    this.indexMap.set(key, i);
     this.bubbleUp(i);
   }
 
@@ -63,11 +64,11 @@ class MinPriorityQueue<T> {
     const root = this.data[0];
     const last = this.data.pop() as QueueNode<T>;
 
-    this.indexMap.delete(root.value);
+    this.indexMap.delete(root.key);
 
     if (this.data.length > 0) {
       this.data[0] = last;
-      this.indexMap.set(last.value, 0);
+      this.indexMap.set(last.key, 0);
       this.minHeapify(0);
     }
 
@@ -100,8 +101,8 @@ class MinPriorityQueue<T> {
     }
   }
 
-  public decreasePriority(value: T, newPriority: number): void {
-    const i = this.indexMap.get(value);
+  public decreasePriority(key: string, newPriority: number): void {
+    const i = this.indexMap.get(key);
     if (i === undefined) {
       return;
     }
@@ -114,8 +115,8 @@ class MinPriorityQueue<T> {
     this.bubbleUp(i);
   }
 
-  public has(value: T): boolean {
-    return this.indexMap.has(value);
+  public has(key: string): boolean {
+    return this.indexMap.has(key);
   }
 
   public isEmpty(): boolean {
