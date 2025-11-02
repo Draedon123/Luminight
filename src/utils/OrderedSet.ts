@@ -1,4 +1,4 @@
-import { random } from "./random";
+import { empty, random } from "./array";
 
 class OrderedSet<T> {
   private readonly array: T[];
@@ -49,7 +49,7 @@ class OrderedSet<T> {
   }
 
   public clear(): void {
-    this.array.splice(0, this.size);
+    empty(this.array);
   }
 
   public get size(): number {

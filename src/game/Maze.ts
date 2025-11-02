@@ -1,5 +1,5 @@
 import { OrderedSet } from "../utils/OrderedSet";
-import { random } from "../utils/random";
+import { empty, random } from "../utils/array";
 
 type Tile = {
   x: number;
@@ -11,7 +11,7 @@ class Maze {
   public width: number;
   public height: number;
 
-  private readonly tiles: Tile[];
+  public readonly tiles: Tile[];
 
   constructor(width: number, height: number) {
     this.tiles = [];
@@ -20,7 +20,7 @@ class Maze {
   }
 
   public create(): this {
-    this.tiles.splice(0, this.tiles.length);
+    empty(this.tiles);
 
     for (let y = 0; y < this.width; y++) {
       for (let x = 0; x < this.height; x++) {
