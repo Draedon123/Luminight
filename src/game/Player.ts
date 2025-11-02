@@ -2,7 +2,7 @@ import type { Maze } from "./Maze";
 import { Point } from "../utils/Point";
 
 class Player {
-  public static readonly SIZE: number = 0.5;
+  public static readonly SIZE: number = 0.8;
   public maze: Maze;
   /** in terms of maze tiles */
   public position: Point;
@@ -23,10 +23,10 @@ class Player {
     const newX = this.position.x + dx;
     const newY = this.position.y + dy;
 
-    const left = Math.floor(newX + Player.SIZE / 2);
-    const right = Math.ceil(newX - Player.SIZE / 2);
-    const top = Math.ceil(newY - Player.SIZE / 2);
-    const bottom = Math.floor(newY + Player.SIZE / 2);
+    const left = Math.floor(newX + (1 - Player.SIZE) / 2);
+    const right = Math.floor(newX + (1 + Player.SIZE) / 2);
+    const bottom = Math.floor(newY + (1 - Player.SIZE) / 2);
+    const top = Math.floor(newY + (1 + Player.SIZE) / 2);
 
     if (
       (dx < 0 &&
@@ -38,8 +38,6 @@ class Player {
       dx === 0
     ) {
       this.position.x = newX;
-    } else {
-      this.position.x = Math.round(newX) + (Math.sign(dx) * Player.SIZE) / 2;
     }
 
     if (
@@ -52,8 +50,6 @@ class Player {
       dy === 0
     ) {
       this.position.y = newY;
-    } else {
-      this.position.y = Math.round(newY) + (Math.sign(dy) * Player.SIZE) / 2;
     }
   }
 }

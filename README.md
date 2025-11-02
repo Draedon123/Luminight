@@ -15,5 +15,6 @@ A simple and spooky maze game
 - https://agusstt.itch.io/tiny-ghost-animated
 - https://pucci-games.itch.io/stones-brick-textures
 - https://opengameart.org/content/tileable-200x200-dirt-texture
+- https://siege.hackclub.com/assets/meeple/meeple-red-94f33c30.png
 
-Many of the downloaded textures were downscaled but otherwise unchanged
+Many of the downloaded textures were downscaled and/or cropped but otherwise unchanged

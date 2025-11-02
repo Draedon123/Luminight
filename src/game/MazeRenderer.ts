@@ -1,6 +1,7 @@
 import { Point } from "../utils/Point";
 import type { Maze } from "./Maze";
 import { Player } from "./Player";
+import { Texture } from "./Texture";
 import { Entity } from "./entities/Entity";
 
 const TWO_PI = Math.PI * 2;
@@ -22,8 +23,10 @@ class MazeRenderer {
   private readonly mazeCTX: CanvasRenderingContext2D;
 
   private renderedMaze: boolean;
-  private wallTexture: HTMLImageElement;
-  private dirtTexture: HTMLImageElement;
+  private initialised: boolean;
+  private wallTexture!: Texture;
+  private dirtTexture!: Texture;
+  private playerTexture!: Texture;
 
   constructor(canvas: HTMLCanvasElement, maze: Maze, player: Player) {
     this.maze = maze;
@@ -38,12 +41,7 @@ class MazeRenderer {
     this.mazeCanvas = document.createElement("canvas");
     this.mazeCTX = this.mazeCanvas.getContext("2d") as CanvasRenderingContext2D;
     this.renderedMaze = false;
-    this.wallTexture = new Image();
-    this.dirtTexture = new Image();
-
-    // praying that these load before they're used
-    this.wallTexture.src = "/Luminight/tiles/wall.png";
-    this.dirtTexture.src = "/Luminight/tiles/dirt.png";
+    this.initialised = false;
 
     this.entities = [];
 
@@ -96,7 +94,7 @@ class MazeRenderer {
         const y = tileSize * (this.maze.height - tile.position.y - 1);
 
         this.mazeCTX.drawImage(
-          tile.isWall ? this.wallTexture : this.dirtTexture,
+          tile.isWall ? this.wallTexture.source : this.dirtTexture.source,
           x,
           y,
           tileSize,
@@ -117,9 +115,8 @@ class MazeRenderer {
       Player.SIZE
     );
 
-    this.ctx.fillStyle = "#f00";
-
-    this.ctx.fillRect(
+    this.ctx.drawImage(
+      this.playerTexture.source,
       playerRenderPosition.x,
       playerRenderPosition.y,
       playerSize,
@@ -209,19 +206,42 @@ class MazeRenderer {
 
   public getRenderPosition(mazePosition: Point, size: number): Point {
     const tileSize = this.getTileSize();
-    const playerSize = size * tileSize;
+    const renderSize = size * tileSize;
     const corner = this.getMazeCorner();
 
     return new Point(
-      corner.x + mazePosition.x * tileSize + 0.5 * (tileSize - playerSize),
+      corner.x + mazePosition.x * tileSize + 0.5 * (tileSize - renderSize),
       corner.y +
         (this.maze.height - mazePosition.y - 1) * tileSize +
-        0.5 * (tileSize - playerSize)
+        0.5 * (tileSize - renderSize)
     );
   }
 
   public reset(): void {
     this.renderedMaze = false;
+  }
+
+  public async initialise(): Promise<void> {
+    if (this.initialised) {
+      return;
+    }
+
+    const [wall, dirt, player] = await Promise.all([
+      Texture.create("/Luminight/tiles/wall.png"),
+      Texture.create("/Luminight/tiles/dirt.png"),
+      Texture.create(
+        "/Luminight/player/player.png",
+        "/Luminight/player/player-flipped.png"
+      ),
+    ]);
+
+    player.framesPerFrame = 10;
+
+    this.wallTexture = wall;
+    this.dirtTexture = dirt;
+    this.playerTexture = player;
+
+    this.initialised = true;
   }
 }
 

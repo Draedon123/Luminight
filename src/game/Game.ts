@@ -15,8 +15,8 @@ const DEFAULT_KEYBINDS: GameOptions["keybinds"] = {
 };
 
 const DEFAULT_MAZE: GameOptions["maze"] = {
-  width: 30,
-  height: 30,
+  width: 20,
+  height: 20,
 };
 
 type GameOptions = {
@@ -112,6 +112,7 @@ class Game {
       return;
     }
 
+    await this.renderer.initialise();
     this.portal = await Portal.create();
     this.portal.randomisePosition(this.maze);
 
@@ -134,9 +135,7 @@ class Game {
       this.thunderAudio.pause();
     });
 
-    const ghostTexture = await Texture.create(
-      ...Array.from({ length: 4 }, (_, i) => `/Luminight/ghost/${i}.png`)
-    );
+    const ghostTexture = await Texture.create("/Luminight/ghost.png");
 
     const enemies = Array.from({ length: this.enemyCount }, () => {
       const enemy = new Enemy(ghostTexture, {
