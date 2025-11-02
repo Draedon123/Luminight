@@ -219,6 +219,10 @@ class MazeRenderer {
         0.5 * (tileSize - playerSize)
     );
   }
+
+  public reset(): void {
+    this.renderedMaze = false;
+  }
 }
 
 export { MazeRenderer };

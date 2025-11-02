@@ -111,7 +111,7 @@ class Enemy extends Entity {
     if (this.movementQueue.length === 0) {
       const moveTo = new Point(0, 0);
 
-      while (maze.getTile(moveTo).isWall) {
+      while (maze.getTile(moveTo).isWall && !moveTo.equals(this.position)) {
         moveTo.x = Math.floor(Math.random() * maze.width);
         moveTo.y = Math.floor(Math.random() * maze.height);
       }

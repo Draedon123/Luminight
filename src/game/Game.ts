@@ -118,7 +118,6 @@ class Game {
     this.portal.position.y = this.maze.height - 2;
 
     this.portal.onCollision = () => {
-      this.stop();
       this.onWin();
     };
 
@@ -155,12 +154,41 @@ class Game {
         this.maze.getTile(enemy.position).isWall
       );
 
+      enemy.onCollision = () => {
+        this.onLose();
+      };
+
       return enemy;
     });
 
     this.renderer.entities.push(this.portal, ...enemies);
 
     this.initialised = true;
+  }
+
+  public reset(): void {
+    this.maze.create();
+
+    for (const enemy of this.renderer.entities) {
+      if (!(enemy instanceof Enemy)) {
+        continue;
+      }
+
+      do {
+        enemy.position.x = Math.floor(Math.random() * this.maze.width);
+        enemy.position.y = Math.floor(Math.random() * this.maze.height);
+      } while (
+        (enemy.position.x < this.maze.width / 2 &&
+          enemy.position.y < this.maze.height / 2) ||
+        this.maze.getTile(enemy.position).isWall
+      );
+    }
+
+    this.player.position.x = 1;
+    this.player.position.y = 1;
+    this.lightningCurrentLifetime = 0;
+
+    this.renderer.reset();
   }
 
   public mount(parent: HTMLElement): void {
