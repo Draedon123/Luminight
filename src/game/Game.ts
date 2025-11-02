@@ -113,10 +113,9 @@ class Game {
     }
 
     this.portal = await Portal.create();
-    this.portal.position = {
-      x: this.maze.width - 2,
-      y: this.maze.height - 2,
-    };
+
+    this.portal.position.x = this.maze.width - 2;
+    this.portal.position.y = this.maze.height - 2;
 
     this.portal.onCollision = () => {
       this.stop();
@@ -153,7 +152,7 @@ class Game {
       } while (
         (enemy.position.x < this.maze.width / 2 &&
           enemy.position.y < this.maze.height / 2) ||
-        this.maze.getTile(enemy.position.x, enemy.position.y).isWall
+        this.maze.getTile(enemy.position).isWall
       );
 
       return enemy;

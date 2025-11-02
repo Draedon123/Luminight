@@ -92,8 +92,8 @@ class MazeRenderer {
       const tileSize = this.getTileSize();
 
       for (const tile of this.maze) {
-        const x = tileSize * tile.x;
-        const y = tileSize * (this.maze.height - tile.y - 1);
+        const x = tileSize * tile.position.x;
+        const y = tileSize * (this.maze.height - tile.position.y - 1);
 
         this.mazeCTX.drawImage(
           tile.isWall ? this.wallTexture : this.dirtTexture,

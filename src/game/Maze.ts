@@ -1,9 +1,9 @@
+import { Point } from "../utils/Point";
 import { OrderedSet } from "../utils/OrderedSet";
 import { empty, random } from "../utils/array";
 
 type Tile = {
-  x: number;
-  y: number;
+  position: Point;
   isWall: boolean;
 };
 
@@ -11,7 +11,7 @@ class Maze {
   public width: number;
   public height: number;
 
-  public readonly tiles: Tile[];
+  private readonly tiles: Tile[];
 
   constructor(width: number, height: number) {
     this.tiles = [];
@@ -25,8 +25,7 @@ class Maze {
     for (let y = 0; y < this.width; y++) {
       for (let x = 0; x < this.height; x++) {
         this.tiles.push({
-          x,
-          y,
+          position: new Point(x, y),
           isWall: true,
         });
       }
@@ -52,8 +51,7 @@ class Maze {
         )
       );
       const wall = this.getTile(
-        frontierTile.x + target.direction[0],
-        frontierTile.y + target.direction[1]
+        Point.add(frontierTile.position, target.direction)
       ) as Tile;
 
       inMaze.add(this.getTileIndex(frontierTile));
@@ -73,16 +71,23 @@ class Maze {
     return this;
   }
 
-  public getTile(x: number, y: number): Tile {
-    return this.tiles[this.getTileIndex(x, y)];
+  public getTile(position: Point): Tile;
+  public getTile(x: number, y: number): Tile;
+  public getTile(x: number | Point, y?: number): Tile {
+    if (x instanceof Point) {
+      y = x.y;
+      x = x.x;
+    }
+
+    return this.tiles[this.getTileIndex(x, y as number)];
   }
 
   private getTileIndex(tile: Tile): number;
   private getTileIndex(x: number, y: number): number;
   private getTileIndex(x: number | Tile, y?: number): number {
     if (typeof x !== "number") {
-      y = x.y;
-      x = x.x;
+      y = x.position.y;
+      x = x.position.x;
     }
 
     return x + this.height * (y as number);
@@ -91,20 +96,19 @@ class Maze {
   private getNeighbours(
     tile: Tile,
     distanceMultiplier: number = 1
-  ): { tile: Tile; direction: number[] }[] {
+  ): { tile: Tile; direction: Point }[] {
     const directions = [
-      [1, 0],
-      [0, 1],
-      [-1, 0],
-      [0, -1],
+      new Point(1, 0),
+      new Point(0, 1),
+      new Point(-1, 0),
+      new Point(0, -1),
     ];
 
     return directions
       .map((direction) => {
         return {
           tile: this.getTile(
-            tile.x + direction[0] * distanceMultiplier,
-            tile.y + direction[1] * distanceMultiplier
+            Point.add(tile.position, Point.scale(direction, distanceMultiplier))
           ),
           direction,
         };
@@ -112,10 +116,10 @@ class Maze {
       .filter(
         (neighbour) =>
           neighbour.tile &&
-          neighbour.tile.x > 0 &&
-          neighbour.tile.y > 0 &&
-          neighbour.tile.x < this.width - 1 &&
-          neighbour.tile.y < this.height - 1
+          neighbour.tile.position.x > 0 &&
+          neighbour.tile.position.y > 0 &&
+          neighbour.tile.position.x < this.width - 1 &&
+          neighbour.tile.position.y < this.height - 1
       );
   }
 

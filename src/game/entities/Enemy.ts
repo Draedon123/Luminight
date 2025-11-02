@@ -29,13 +29,12 @@ class Enemy extends Entity {
     const previous = new Map<string, Tile | null>();
     const visited = new Set<string>();
 
-    const key = (x: number, y: number) => `${x},${y}`;
+    const key = (position: Point) => `${position.x},${position.y}`;
 
-    for (const tile of maze.tiles) {
-      const dist =
-        tile.x === this.position.x && tile.y === this.position.y ? 0 : Infinity;
+    for (const tile of maze) {
+      const dist = tile.position.equals(this.position) ? 0 : Infinity;
 
-      const tileKey = key(tile.x, tile.y);
+      const tileKey = key(tile.position);
       distanceMap.set(tileKey, dist);
       previous.set(tileKey, null);
       queue.insert({ tile, distance: dist }, dist, tileKey);
@@ -45,14 +44,14 @@ class Enemy extends Entity {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const min = queue.extractMin()!;
       const current = min.value.tile;
-      const currentKey = key(current.x, current.y);
+      const currentKey = key(current.position);
 
       if (visited.has(currentKey)) {
         continue;
       }
       visited.add(currentKey);
 
-      if (current.x === target.x && current.y === target.y) {
+      if (current.position.equals(target)) {
         break;
       }
 
@@ -60,10 +59,10 @@ class Enemy extends Entity {
       const currentDist = distanceMap.get(currentKey)!;
 
       const neighbours = [
-        [current.x + 1, current.y],
-        [current.x - 1, current.y],
-        [current.x, current.y + 1],
-        [current.x, current.y - 1],
+        [current.position.x + 1, current.position.y],
+        [current.position.x - 1, current.position.y],
+        [current.position.x, current.position.y + 1],
+        [current.position.x, current.position.y - 1],
       ];
 
       for (const [x, y] of neighbours) {
@@ -76,7 +75,7 @@ class Enemy extends Entity {
           continue;
         }
 
-        const neighbourKey = key(x, y);
+        const neighbourKey = key(neighbour.position);
         const alt = currentDist + 1;
 
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -89,12 +88,12 @@ class Enemy extends Entity {
     }
 
     const path: Tile[] = [];
-    let current = maze.getTile(target.x, target.y) || null;
+    let current = maze.getTile(target) || null;
 
     while (current) {
       path.unshift(current);
 
-      const prev = previous.get(key(current.x, current.y));
+      const prev = previous.get(key(current.position));
 
       if (!prev) {
         break;
@@ -104,7 +103,7 @@ class Enemy extends Entity {
     }
 
     for (const tile of path) {
-      this.movementQueue.push(tile);
+      this.movementQueue.push(tile.position);
     }
   }
 
@@ -112,7 +111,7 @@ class Enemy extends Entity {
     if (this.movementQueue.length === 0) {
       const moveTo = new Point(0, 0);
 
-      while (maze.getTile(moveTo.x, moveTo.y).isWall) {
+      while (maze.getTile(moveTo).isWall) {
         moveTo.x = Math.floor(Math.random() * maze.width);
         moveTo.y = Math.floor(Math.random() * maze.height);
       }
@@ -121,26 +120,19 @@ class Enemy extends Entity {
     }
 
     const target = this.movementQueue[0];
+    const displacement = Point.subtract(target, this.position);
 
-    let dx = target.x - this.position.x;
-    let dy = target.y - this.position.y;
-
-    if (Math.abs(dx) + Math.abs(dy) <= 1e-2) {
+    if (Math.abs(displacement.x) + Math.abs(displacement.y) <= 1e-2) {
       this.movementQueue.shift();
 
-      this.position.x = Math.round(this.position.x);
-      this.position.y = Math.round(this.position.y);
+      this.position.round();
 
       return;
     }
 
-    const normalisation = (this.movementSpeed * deltaTime) / Math.hypot(dx, dy);
+    displacement.normalise().scale(this.movementSpeed * deltaTime);
 
-    dx *= normalisation;
-    dy *= normalisation;
-
-    this.position.x += dx;
-    this.position.y += dy;
+    this.position.add(displacement);
   }
 }
 
