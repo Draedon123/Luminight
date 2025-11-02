@@ -1,7 +1,7 @@
 import { Point } from "../utils/Point";
 import type { Maze } from "./Maze";
 import { Player } from "./Player";
-import { Item } from "./Item";
+import { Collidable } from "./Collidable";
 
 const TWO_PI = Math.PI * 2;
 
@@ -12,7 +12,7 @@ class MazeRenderer {
   public auraIntensity: number;
   /** 0-1 */
   public maskAlpha: number;
-  public items: Item[];
+  public items: Collidable[];
 
   public readonly ctx: CanvasRenderingContext2D;
   private readonly canvas: HTMLCanvasElement;

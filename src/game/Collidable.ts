@@ -4,19 +4,19 @@ import { Point } from "../utils/Point";
 import { Texture } from "./Texture";
 import { Player } from "./Player";
 
-type ItemOptions = {
+type CollidableOptions = {
   texture: Texture;
   size?: number;
   onCollision?: () => unknown;
 };
 
-class Item {
+class Collidable {
   public position: Point;
   public size: number;
   public onCollision: () => unknown;
 
   public readonly texture: Texture;
-  constructor(options: ItemOptions) {
+  constructor(options: CollidableOptions) {
     this.position = new Point();
     this.size = options.size ?? 0.5;
     this.texture = options.texture;
@@ -59,4 +59,4 @@ class Item {
   }
 }
 
-export { Item };
+export { Collidable };

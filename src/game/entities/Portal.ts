@@ -1,7 +1,7 @@
-import { Item } from "../Item";
+import { Collidable } from "../Collidable";
 import { Texture } from "../Texture";
 
-class Portal extends Item {
+class Portal extends Collidable {
   constructor(texture: Texture) {
     super({ texture, size: 1 });
   }

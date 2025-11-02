@@ -3,7 +3,7 @@ import { Maze } from "./Maze";
 import { Player } from "./Player";
 import { FrameData, Loop } from "../utils/Loop";
 import { KeyboardManager } from "../utils/KeyboardManager";
-import { Portal } from "./items/Portal";
+import { Portal } from "./entities/Portal";
 
 const DEFAULT_KEYBINDS: GameOptions["keybinds"] = {
   FORWARD: "KeyW",
@@ -86,7 +86,7 @@ class Game {
     this.flickerSpeed = options.flickerSpeed ?? 1 / 160;
     this.playerAuraRadius = options.playerAuraRadius ?? 1.5;
     this.lightningDuration = options.lightningDuration_ms ?? 500;
-    this.lightningRarity = options.lightningRarity ?? 30;
+    this.lightningRarity = options.lightningRarity ?? 25;
     this.lightningBrightness = options.lightningBrightness ?? 0.8;
 
     this.onWin = options.onWin ?? (() => {});
