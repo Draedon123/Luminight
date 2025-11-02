@@ -1,5 +1,6 @@
 import { Entity } from "./Entity";
 import { Texture } from "../Texture";
+import { Maze } from "../Maze";
 
 class Portal extends Entity {
   constructor(texture: Texture) {
@@ -16,6 +17,18 @@ class Portal extends Entity {
     );
 
     return new Portal(texture);
+  }
+
+  public randomisePosition(maze: Maze) {
+    do {
+      this.position.x = Math.floor(Math.random() * maze.width);
+      this.position.y = Math.floor(Math.random() * maze.height);
+    } while (
+      maze.getTile(this.position).isWall ||
+      // force the portal to spawn somewhere in the top-right corner
+      this.position.x < maze.width / 1.5 ||
+      this.position.y < maze.height / 1.5
+    );
   }
 }
 

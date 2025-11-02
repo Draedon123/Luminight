@@ -113,9 +113,7 @@ class Game {
     }
 
     this.portal = await Portal.create();
-
-    this.portal.position.x = this.maze.width - 2;
-    this.portal.position.y = this.maze.height - 2;
+    this.portal.randomisePosition(this.maze);
 
     this.portal.onCollision = () => {
       this.onWin();
@@ -183,6 +181,8 @@ class Game {
         this.maze.getTile(enemy.position).isWall
       );
     }
+
+    this.portal.randomisePosition(this.maze);
 
     this.player.position.x = 1;
     this.player.position.y = 1;
