@@ -27,10 +27,10 @@ class Entity {
   public checkCollisions(player: Player): void {
     const itemLeft =
       this.position.x + (1 - this.hitboxMultiplier * this.size) / 2;
-    const itemRight = itemLeft + this.size;
+    const itemRight = itemLeft + this.hitboxMultiplier * this.size;
     const itemBottom =
       this.position.y + (1 - this.hitboxMultiplier * this.size) / 2;
-    const itemTop = itemBottom + this.size;
+    const itemTop = itemBottom + this.hitboxMultiplier * this.size;
 
     const playerLeft = player.position.x + (1 - Player.SIZE) / 2;
     const playerRight = playerLeft + Player.SIZE;

@@ -18,7 +18,7 @@ class Enemy extends Entity {
     super({ texture, size: 0.8 });
 
     this.movementSpeed = options.movementSpeed;
-    this.hitboxMultiplier = 0.3;
+    this.hitboxMultiplier = 0.2;
     this.movementQueue = [];
   }
 

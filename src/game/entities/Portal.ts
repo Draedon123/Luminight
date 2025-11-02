@@ -5,6 +5,8 @@ import { Maze } from "../Maze";
 class Portal extends Entity {
   constructor(texture: Texture) {
     super({ texture, size: 1 });
+
+    this.hitboxMultiplier = 0.01;
   }
 
   public static async create(): Promise<Portal> {

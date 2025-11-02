@@ -11,7 +11,7 @@ import "./style.scss";
   game.mount(gameContainer);
 
   const startButton = document.getElementById("start") as HTMLButtonElement;
-  const restartButton = document.getElementById("restart") as HTMLButtonElement;
+  const restartButtons = document.querySelectorAll(".restart");
   const tutorialScreen = document.getElementById("tutorial") as HTMLElement;
   const winScreen = document.getElementById("win") as HTMLElement;
   const loseScreen = document.getElementById("lose") as HTMLElement;
@@ -31,12 +31,14 @@ import "./style.scss";
     loseScreen.classList.remove("hidden");
   };
 
-  restartButton.addEventListener("click", () => {
-    banner.classList.add("hidden");
-    loseScreen.classList.add("hidden");
-    game.reset();
-    game.start();
-  });
+  for (const restartButton of restartButtons) {
+    restartButton.addEventListener("click", () => {
+      banner.classList.add("hidden");
+      loseScreen.classList.add("hidden");
+      game.reset();
+      game.start();
+    });
+  }
 
   startButton.addEventListener("click", () => {
     banner.classList.add("hidden");
