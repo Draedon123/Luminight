@@ -87,7 +87,7 @@ class Game {
     this.movementSpeed = options.movementSpeed ?? 0.0025;
     this.flickerRadius = options.flickerRadius ?? 0.04;
     this.flickerSpeed = options.flickerSpeed ?? 1 / 160;
-    this.playerAuraRadius = options.playerAuraRadius ?? 200;
+    this.playerAuraRadius = options.playerAuraRadius ?? 2;
     this.lightningDuration = options.lightningDuration_ms ?? 500;
     this.lightningRarity = options.lightningRarity ?? 25;
     this.lightningBrightness = options.lightningBrightness ?? 0.8;
