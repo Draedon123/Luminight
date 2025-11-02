@@ -134,6 +134,10 @@ class Enemy extends Entity {
 
     this.position.add(displacement);
   }
+
+  public reset(): void {
+    empty(this.movementQueue);
+  }
 }
 
 export { Enemy };

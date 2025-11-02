@@ -179,6 +179,8 @@ class Game {
           enemy.position.y < this.maze.height / 2) ||
         this.maze.getTile(enemy.position).isWall
       );
+
+      enemy.reset();
     }
 
     this.portal.randomisePosition(this.maze);
