@@ -16,5 +16,6 @@ A simple maze game where you try to locate a portal in darkness while also runni
 - https://pucci-games.itch.io/stones-brick-textures
 - https://opengameart.org/content/tileable-200x200-dirt-texture
 - https://siege.hackclub.com/assets/meeple/meeple-red-94f33c30.png
+- https://pixabay.com/sound-effects/howling-ambient-with-a-beat-59772/
 
 Many of the downloaded textures were downscaled and/or cropped but otherwise unchanged

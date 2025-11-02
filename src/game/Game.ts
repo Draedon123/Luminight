@@ -6,6 +6,7 @@ import { KeyboardManager } from "../utils/KeyboardManager";
 import { Portal } from "./entities/Portal";
 import { Enemy } from "./entities/Enemy";
 import { Texture } from "./Texture";
+import { loadAudio } from "../utils/loadAudio";
 
 const DEFAULT_KEYBINDS: GameOptions["keybinds"] = {
   FORWARD: "KeyW",
@@ -53,6 +54,7 @@ class Game {
   private readonly keyboardManager: KeyboardManager;
   private readonly keybinds: GameOptions["keybinds"];
   private readonly thunderAudio: HTMLAudioElement;
+  private readonly ambience: HTMLAudioElement;
 
   private playerAuraRadius: number;
 
@@ -100,6 +102,13 @@ class Game {
     this.lightningCurrentLifetime = 0;
 
     this.thunderAudio = document.createElement("audio");
+    this.ambience = document.createElement("audio");
+
+    this.thunderAudio.preload = "auto";
+    this.ambience.preload = "auto";
+
+    this.ambience.setAttribute("loop", "true");
+
     this.thunderAudio.volume = 0.1;
 
     this.initialised = false;
@@ -120,16 +129,10 @@ class Game {
       this.onWin();
     };
 
-    await new Promise<void>((resolve, reject) => {
-      const callback = () => {
-        resolve();
-        this.thunderAudio.removeEventListener("canplaythrough", callback);
-      };
-
-      this.thunderAudio.addEventListener("canplaythrough", callback);
-      this.thunderAudio.onerror = reject;
-      this.thunderAudio.src = "/Luminight/thunder.mp3";
-    });
+    await Promise.all([
+      loadAudio(this.thunderAudio, "/Luminight/thunder.mp3"),
+      loadAudio(this.ambience, "/Luminight/ambience.mp3"),
+    ]);
 
     this.thunderAudio.addEventListener("ended", () => {
       this.thunderAudio.pause();
@@ -202,6 +205,8 @@ class Game {
 
   public start(): void {
     this.loop.start();
+
+    this.ambience.play();
   }
 
   private tick(frame: FrameData): void {
@@ -278,6 +283,8 @@ class Game {
 
   public stop(): void {
     this.loop.stop();
+    this.ambience.pause();
+    this.ambience.currentTime = 0;
   }
 }
 
