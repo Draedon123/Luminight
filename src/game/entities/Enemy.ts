@@ -15,7 +15,7 @@ class Enemy extends Entity {
   private movementQueue: Point[];
 
   constructor(texture: Texture, options: EnemyOptions) {
-    super({ texture });
+    super({ texture, size: 0.8 });
 
     this.movementSpeed = options.movementSpeed;
     this.movementQueue = [];

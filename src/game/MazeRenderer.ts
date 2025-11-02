@@ -22,6 +22,8 @@ class MazeRenderer {
   private readonly mazeCTX: CanvasRenderingContext2D;
 
   private renderedMaze: boolean;
+  private wallTexture: HTMLImageElement;
+  private dirtTexture: HTMLImageElement;
 
   constructor(canvas: HTMLCanvasElement, maze: Maze, player: Player) {
     this.maze = maze;
@@ -36,6 +38,13 @@ class MazeRenderer {
     this.mazeCanvas = document.createElement("canvas");
     this.mazeCTX = this.mazeCanvas.getContext("2d") as CanvasRenderingContext2D;
     this.renderedMaze = false;
+    this.wallTexture = new Image();
+    this.dirtTexture = new Image();
+
+    // praying that these load before they're used
+    this.wallTexture.src = "/Luminight/tiles/wall.png";
+    this.dirtTexture.src = "/Luminight/tiles/dirt.png";
+
     this.entities = [];
 
     new ResizeObserver((entries) => {
@@ -82,15 +91,17 @@ class MazeRenderer {
     if (!this.renderedMaze) {
       const tileSize = this.getTileSize();
 
-      this.mazeCTX.strokeStyle = "#000";
-
       for (const tile of this.maze) {
         const x = tileSize * tile.x;
         const y = tileSize * (this.maze.height - tile.y - 1);
 
-        this.mazeCTX.fillStyle = tile.isWall ? "#000" : "#fff";
-        this.mazeCTX.fillRect(x, y, tileSize, tileSize);
-        this.mazeCTX.strokeRect(x, y, tileSize, tileSize);
+        this.mazeCTX.drawImage(
+          tile.isWall ? this.wallTexture : this.dirtTexture,
+          x,
+          y,
+          tileSize,
+          tileSize
+        );
       }
 
       this.renderedMaze = true;

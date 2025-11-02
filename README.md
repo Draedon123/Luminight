@@ -13,3 +13,7 @@ A simple and spooky maze game
 - https://www.geeksforgeeks.org/dsa/binary-heap/
 - https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
 - https://agusstt.itch.io/tiny-ghost-animated
+- https://pucci-games.itch.io/stones-brick-textures
+- https://opengameart.org/content/tileable-200x200-dirt-texture
+
+Many of the downloaded textures were downscaled but otherwise unchanged
